@@ -9,10 +9,11 @@ from forte.pipeline import Pipeline
 import pandas as pd
 
 class BaseDataAugmenter(ABC):
-    @abstractmethod
-    def __init__(self, data_path, **kwargs):
-        pass
 
+    def __init__(self, dataset, data_column, label_column) -> None:
+        self.dataset = dataset
+        self.data_column = data_column
+        self.label_column = label_column
     
     def _initialize_pipeline(self):
         nlp = Pipeline[MultiPack]()
@@ -23,21 +24,21 @@ class BaseDataAugmenter(ABC):
         return nlp
 
     
-    def _augment_data(self, augment_processor, augment_configs, dataset, data_column, label_column):
-        
+    def _augment_data(self, augment_processor, augment_configs):
+        augment_processor, augment_configs = self._create_processor()
         pipeline = self._initialize_pipeline()
         pipeline.add(component=augment_processor, config=augment_configs)
         pipeline.initialize()
 
         augmented_data = []
-        for idx, m_pack in enumerate(pipeline.process_dataset(dataset[data_column])):
+        for idx, m_pack in enumerate(pipeline.process_dataset(self.dataset[self.data_column])):
             augmented_data.append({
-                data_column: m_pack.get_pack("augmented_input_src").text,
-                label_column: dataset[label_column][idx]
+                self.data_column: m_pack.get_pack("augmented_input_src").text,
+                self.label_column: self.dataset[self.label_column][idx]
             })
         augmented_data_df = pd.DataFrame(augmented_data)
-        return pd.concat([dataset, augmented_data_df], axis=0)
+        return pd.concat([self.dataset, augmented_data_df], axis=0)
 
     @abstractmethod
-    def _create_augmentation(self, **kwargs):
+    def _create_processor(self):
         pass
