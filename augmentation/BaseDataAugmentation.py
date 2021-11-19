@@ -10,10 +10,11 @@ import pandas as pd
 
 class BaseDataAugmenter(ABC):
 
-    def __init__(self, dataset, data_column, label_column) -> None:
+    def __init__(self, dataset, data_column, label_column, augment_frac) -> None:
         self.dataset = dataset
         self.data_column = data_column
         self.label_column = label_column
+        self.augment_frac = augment_frac
     
     def _initialize_pipeline(self):
         nlp = Pipeline[MultiPack]()
@@ -31,7 +32,7 @@ class BaseDataAugmenter(ABC):
         pipeline.initialize()
 
         augmented_data = []
-        for idx, m_pack in enumerate(pipeline.process_dataset(self.dataset[self.data_column])):
+        for idx, m_pack in enumerate(pipeline.process_dataset(self.dataset[self.data_column].sample(frac = self.augment_frac))):
             augmented_data.append({
                 self.data_column: m_pack.get_pack("augmented_input_src").text,
                 self.label_column: self.dataset[self.label_column][idx]
