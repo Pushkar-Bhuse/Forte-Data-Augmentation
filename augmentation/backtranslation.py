@@ -33,7 +33,3 @@ class BackTranslator(BaseDataAugmenter):
         }
         processor = ReplacementDataAugmentProcessor()
         return processor, processor_config
-    
-    def augment(self):
-        processor, processor_config = self._create_processor()
-        return super()._augment_data(processor, processor_config)
