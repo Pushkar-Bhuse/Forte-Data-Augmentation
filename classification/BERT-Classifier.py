@@ -4,8 +4,7 @@ import tensorflow as tf
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from keras.callbacks import ReduceLROnPlateau, History
-from keras.callbacks import CSVLogger
+from keras.callbacks import ReduceLROnPlateau
 
 
 class BERTClassifier():
@@ -101,13 +100,7 @@ class BERTClassifier():
 
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.01,
                                     patience=5, min_lr=0.001)
-
-        train_history = self.model.fit(train_data, epochs=2, validation_data=validation_data, callbacks=[reduce_lr])
-
-        return train_history.history
-
-
-        self.history = self.model.fit(train_data, epochs=2, validation_data=validation_data, callbacks=[reduce_lr, csv_logger])
+        self.history = self.model.fit(train_data, epochs=2, validation_data=validation_data, callbacks=[reduce_lr])
         
     def get_results(self):
         return self.history
