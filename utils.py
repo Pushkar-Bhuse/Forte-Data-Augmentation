@@ -5,6 +5,7 @@ import pandas as pd
 from importlib import import_module
 
 from augmentation.BaseDataAugmentation import BaseDataAugmenter
+from classification.BERTClassifier import BERTClassifier
 
 def append_to_csv(history):
     df = pd.DataFrame.from_dict(history, orient="index")
@@ -44,3 +45,8 @@ def get_augmentation_processors(ignore_list = ['__init__.py'],
                     })
                     # Perform Task
     return final_list
+
+def train_augmented_data(train_data, data_column, label_column, method):
+    classifier = BERTClassifier()
+    history = classifier.train_model(train_data, 0.2, data_column, label_column)
+    return {method: history}

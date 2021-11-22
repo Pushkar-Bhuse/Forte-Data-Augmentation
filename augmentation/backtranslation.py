@@ -6,8 +6,8 @@ class BackTranslator(BaseDataAugmenter):
         super().__init__(dataset, data_column, label_column, augment_frac)
         self.src_lang = kwargs.get("src_lang", "en")
         self.target_lang = kwargs.get("target_lang", "de")
-        self.prob = kwargs.get("prob", 0.6)
-        self.cuda = kwargs.get("cuda", "cpu")
+        self.prob = kwargs.get("prob", 1)
+        self.device = kwargs.get("device", "cpu")
 
     def _create_processor(self):
         processor_config = {
@@ -26,7 +26,7 @@ class BackTranslator(BaseDataAugmenter):
                     'model_back': 'forte.processors.data_augment.algorithms.machine_translator.MarianMachineTranslator',
                     'src_language': self.src_lang,
                     'tgt_language': self.target_lang,
-                    'device': self.cuda,
+                    'device': self.device,
                     'prob': self.prob
                 }
             }

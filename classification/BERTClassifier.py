@@ -86,7 +86,7 @@ class BERTClassifier():
         train_max_len = np.max(train[data_column].str.len())
         validation_max_len = np.max(validation[data_column].str.len())
 
-        train_InputExamples, validation_InputExamples = self.convert_data_to_examples(train, validation, data_column, label_column)
+        train_InputExamples, validation_InputExamples = self._convert_data_to_examples(train, validation, data_column, label_column)
 
         train_data = self._convert_examples_to_tf_dataset(list(train_InputExamples), self.tokenizer, train_max_len)
         train_data = train_data.shuffle(100).batch(batch_size).repeat(epochs)
@@ -101,9 +101,6 @@ class BERTClassifier():
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.01,
                                     patience=5, min_lr=0.001)
         self.history = self.model.fit(train_data, epochs=2, validation_data=validation_data, callbacks=[reduce_lr])
-        
-    def get_results(self):
         return self.history
-        
     # def evaluate_test(self, log_destination):
 
