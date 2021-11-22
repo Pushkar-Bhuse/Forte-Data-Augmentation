@@ -79,7 +79,7 @@ class BERTClassifier():
                     data_column, 
                     label_column, 
                     batch_size, 
-                    epochs):
+                    epochs) -> dict:
         train, validation = train_test_split(dataset, test_size=validation_split)
 
         #Findingbthe max length of data in both train and validation data
@@ -101,10 +101,11 @@ class BERTClassifier():
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.01,
                                     patience=5, min_lr=0.001)
 
-        #Logging Training Results
-        csv_logger = CSVLogger('BERT_Classification_log.csv', append=True, separator=';')
+        train_history = self.model.fit(train_data, epochs=2, validation_data=validation_data, callbacks=[reduce_lr])
 
-        self.model.fit(train_data, epochs=2, validation_data=validation_data, callbacks=[reduce_lr, csv_logger])
+        return train_history.history
+
+
 
     # def evaluate_test(self, log_destination):
 

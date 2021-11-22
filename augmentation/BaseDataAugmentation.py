@@ -10,7 +10,7 @@ import pandas as pd
 
 class BaseDataAugmenter(ABC):
 
-    def __init__(self, dataset, data_column, label_column, augment_frac) -> None:
+    def __init__(self, dataset = "", data_column = "", label_column = "", augment_frac = 0) -> None:
         self.dataset = dataset
         self.data_column = data_column
         self.label_column = label_column
@@ -41,5 +41,5 @@ class BaseDataAugmenter(ABC):
         return pd.concat([self.dataset, augmented_data_df], axis=0)
 
     @abstractmethod
-    def _create_processor(self):
+    def create_processor(self):
         pass

@@ -1,5 +1,5 @@
 import re
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup   
 
 #Removing the html strips
 def strip_html(text):
