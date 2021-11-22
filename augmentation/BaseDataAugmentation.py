@@ -25,7 +25,7 @@ class BaseDataAugmenter(ABC):
         return nlp
 
     
-    def _augment_data(self, augment_processor, augment_configs):
+    def _augment_data(self):
         augment_processor, augment_configs = self._create_processor()
         pipeline = self._initialize_pipeline()
         pipeline.add(component=augment_processor, config=augment_configs)

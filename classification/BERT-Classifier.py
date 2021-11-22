@@ -2,8 +2,9 @@ from transformers import BertTokenizer, TFBertForSequenceClassification
 from transformers import InputExample, InputFeatures
 import tensorflow as tf 
 import numpy as np
+import pandas as pd
 from sklearn.model_selection import train_test_split
-from keras.callbacks import ReduceLROnPlateau
+from keras.callbacks import ReduceLROnPlateau, History
 from keras.callbacks import CSVLogger
 
 
@@ -106,6 +107,10 @@ class BERTClassifier():
         return train_history.history
 
 
-
+        self.history = self.model.fit(train_data, epochs=2, validation_data=validation_data, callbacks=[reduce_lr, csv_logger])
+        
+    def get_results(self):
+        return self.history
+        
     # def evaluate_test(self, log_destination):
 
