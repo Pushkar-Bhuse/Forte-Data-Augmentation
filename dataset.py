@@ -6,9 +6,10 @@ class Dataset():
     def __init__(self, **kwargs) -> None:
         sep = kwargs.get("sep", ",")
         path = kwargs.get("path", "")
+        type = kwargs.get("type", "IMDB")
         self.data_column = kwargs.get("data_column", "DATA_COLUMN")
         self.label_column = kwargs.get("label_column", "LABEL_COLUMN")
-        if path == "":
+        if type == "IMDB":
             URL = "https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz"
             dataset = tf.keras.utils.get_file(fname="dataset", 
                                     origin=URL,

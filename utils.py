@@ -13,7 +13,10 @@ def append_to_csv(history):
     else:
         df.to_csv("aug_output.csv")
 
-def get_augmentation_processors(ignore_list = ['__init__.py'], base_directory = 'test_folder'):
+def get_augmentation_processors(ignore_list = ['__init__.py'], 
+                                base_directory = 'test_folder',
+                                specific_augemtation = []
+                                ):
     augmentation_list = []
     for root, dirs, files in os.walk(f"{base_directory}", topdown=False):    
         for name in files:
@@ -31,7 +34,13 @@ def get_augmentation_processors(ignore_list = ['__init__.py'], base_directory = 
         # Instantiate the object:
         for name, obj in inspect.getmembers(module):
             if inspect.isclass(obj):
-                if issubclass(obj, BaseDataAugmenter) and "BaseDataAugmenter" not in name:
-                    final_list.append(obj)
+                if (issubclass(obj, BaseDataAugmenter)) and \
+                    ("BaseDataAugmenter" not in name) and \
+                    ((name in specific_augemtation) or len(specific_augemtation) == 0):
+                    
+                    final_list.append({
+                        "name": name,
+                        "augmentation_class": obj
+                    })
                     # Perform Task
     return final_list

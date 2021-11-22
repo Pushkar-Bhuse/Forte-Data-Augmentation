@@ -2,51 +2,90 @@ import argparse
 import functools
 import logging
 import os
+import torch
+import classification
+import utils
+from dataset import Dataset
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "--pretrained-model-name",
+    "--task",
     type=str,
-    default="bert-base-uncased",
-    choices=tx.modules.BERTEncoder.available_checkpoints(),
-    help="Name of the pre-trained downstream checkpoint to load.",
+    default="classification",
+    choices=["classification"],
+    help="The type of task on which you want to check the performance of data augmentation",
 )
+
 parser.add_argument(
-    "--output-dir",
-    default="output/",
-    help="The output directory where the model checkpoints will be written.",
-)
-parser.add_argument(
-    "--do-train", action="store_true", help="Whether to run training."
-)
-parser.add_argument(
-    "--do-eval", action="store_true", help="Whether to run eval on the dev set."
-)
-parser.add_argument(
-    "--do-test",
-    action="store_true",
-    help="Whether to run test on the test set.",
-)
-parser.add_argument(
-    "--augmentation-model-name",
+    "--model-type",
     type=str,
-    default="bert-base-uncased",
-    choices=tx.modules.BERTEncoder.available_checkpoints(),
-    help="Name of the pre-trained augmentation model checkpoint to load.",
+    default="BERT",
+    choices=["BERT"],
+    help="The model to use for performing task.",
 )
+
 parser.add_argument(
-    "--num-aug",
-    type=int,
-    default=4,
-    help="number of augmentation samples when fine-tuning aug model",
+    "--augmentation-method",
+    type=str,
+    default="all",
+    choices=["ALL", "EDA-Insertion", "EDA-Deleteion", "EDA-Swapping", "BackTranslation"],
+    help="The type of Data Augmentation Method to test.",
 )
+
 parser.add_argument(
-    "--classifier-pretrain-epoch",
-    type=int,
-    default=10,
-    help="number of epochs to pretrain the classifier",
+    "--dataset-type",
+    type=str,
+    default="IMDB",
+    choices=["IMDB"],
+    help="The dataset to perform augmentation on."
 )
+
+parser.add_argument(
+    "--percentage-augmentation",
+    type=float,
+    default=0.5,
+    help="The fraction of the dataset that will be augmented.",
+)
+
 args = parser.parse_args()
 
+# Checking for the existence of a GPU.
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 logging.root.setLevel(logging.INFO)
+print("The Experiment is curently using: {}".format(device))
+
+
+def initialize_model():
+    if args.model-type == "BERT":
+        print("**** Initializing the BERT model ****")
+        BERT_Model = classification.BERTClassifier.BERTClassifier()
+        return BERT_Model
+
+def initialize_dataset():
+    if args.dataset-type == "IMDB":
+        dataset = Dataset(type = "IMDB")
+        return dataset
+
+def get_augmentation_processors(dataset):
+    if args.augmentation-method == "ALL":
+        augmentation_methods = utils.get_augmentation_processors()
+        augmentation_processors = []
+        for method in augmentation_methods:
+            if method["name"] == "BackTranslator":
+                augmentation_processors.append(
+                    method['augmentation_class']()
+                )
+
+            augmentation_processors.append(
+                method
+            )
+
+
+
+
+
+
+
+
+
+
