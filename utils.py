@@ -1,8 +1,17 @@
 import os
+from os.path import exists
 import inspect
+import pandas as pd
 from importlib import import_module
+
 from augmentation.BaseDataAugmentation import BaseDataAugmenter
 
+def append_to_csv(history):
+    df = pd.DataFrame.from_dict(history, orient="index")
+    if exists("aug_output.csv"):
+        df.to_csv("aug_output.csv", mode="a", index=True, header=False)
+    else:
+        df.to_csv("aug_output.csv")
 
 def get_augmentation_processors(ignore_list = ['__init__.py'], base_directory = 'test_folder'):
     augmentation_list = []
@@ -26,7 +35,3 @@ def get_augmentation_processors(ignore_list = ['__init__.py'], base_directory = 
                     final_list.append(obj)
                     # Perform Task
     return final_list
-
-x = get_augmentation_processors()
-print("-----")
-print(x[0]().create_processor())
