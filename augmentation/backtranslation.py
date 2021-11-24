@@ -1,5 +1,5 @@
 from forte.processors.data_augment import ReplacementDataAugmentProcessor
-from BaseDataAugmentation import BaseDataAugmenter
+from augmentation.BaseDataAugmentation import BaseDataAugmenter
 
 class BackTranslator(BaseDataAugmenter):
     def __init__(self, dataset, data_column, label_column, augment_frac: float = 0.2, **kwargs) -> None:
@@ -9,7 +9,7 @@ class BackTranslator(BaseDataAugmenter):
         self.prob = kwargs.get("prob", 1)
         self.device = kwargs.get("device", "cpu")
 
-    def _create_processor(self):
+    def create_processor(self):
         processor_config = {
             'augment_entry': 'ft.onto.base_ontology.Token',
             'other_entry_policy': {

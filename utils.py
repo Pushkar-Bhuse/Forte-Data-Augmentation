@@ -15,7 +15,7 @@ def append_to_csv(history):
         df.to_csv("aug_output.csv")
 
 def get_augmentation_processors(ignore_list = ['__init__.py'], 
-                                base_directory = 'test_folder',
+                                base_directory = 'augmentation',
                                 specific_augemtation = []
                                 ):
     augmentation_list = []
@@ -46,7 +46,6 @@ def get_augmentation_processors(ignore_list = ['__init__.py'],
                     # Perform Task
     return final_list
 
-def train_augmented_data(train_data, data_column, label_column, method):
-    classifier = BERTClassifier()
-    history = classifier.train_model(train_data, 0.2, data_column, label_column)
+def train_augmented_data(model, train_data, data_column, label_column, method):
+    history = model.train_model(train_data, 0.2, data_column, label_column)
     return {method: history}
