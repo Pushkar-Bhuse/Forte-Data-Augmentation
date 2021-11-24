@@ -33,6 +33,7 @@ class BaseDataAugmenter(ABC):
 
         augmented_data = []
         for idx, m_pack in enumerate(pipeline.process_dataset(self.dataset[self.data_column].sample(frac = self.augment_frac))):
+            print("Currently on Index: {}".format(idx))
             augmented_data.append({
                 self.data_column: m_pack.get_pack("augmented_input_src").text,
                 self.label_column: self.dataset[self.label_column][idx]

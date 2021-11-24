@@ -54,7 +54,7 @@ class Dataset():
             self.train, self.test = train_test_split(dataset.sample(frac=0.1), test_size=0.2)
             
     def get_dataset(self):
-        return self.train, self.test
+        return self.train[:10], self.test[:3]
 
     def get_column_names(self):
         return self.data_column, self.label_column

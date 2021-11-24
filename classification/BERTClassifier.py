@@ -78,11 +78,11 @@ class BERTClassifier():
                     validation_split, 
                     data_column, 
                     label_column, 
-                    batch_size, 
-                    epochs) -> dict:
+                    batch_size = 32, 
+                    epochs = 2) -> dict:
         train, validation = train_test_split(dataset, test_size=validation_split)
 
-        #Findingbthe max length of data in both train and validation data
+        #Finding the max length of data in both train and validation data
         train_max_len = np.max(train[data_column].str.len())
         validation_max_len = np.max(validation[data_column].str.len())
 
@@ -100,7 +100,7 @@ class BERTClassifier():
 
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.01,
                                     patience=5, min_lr=0.001)
-        self.history = self.model.fit(train_data, epochs=2, validation_data=validation_data, callbacks=[reduce_lr])
+        self.history = self.model.fit(train_data, epochs=2, verbose=1, validation_data=validation_data, callbacks=[reduce_lr])
         return self.history
     # def evaluate_test(self, log_destination):
 
