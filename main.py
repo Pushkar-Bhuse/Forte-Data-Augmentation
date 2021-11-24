@@ -17,7 +17,7 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--model-type",
+    "--model_type",
     type=str,
     default="BERT",
     choices=["BERT"],
@@ -25,14 +25,14 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--augmentation-method",
+    "--augmentation_method",
     type=str,
     default="all",
     help="The type of Data Augmentation Method to test.",
 )
 
 parser.add_argument(
-    "--dataset-type",
+    "--dataset_type",
     type=str,
     default="IMDB",
     choices=["IMDB"],
@@ -40,10 +40,17 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--percentage-augmentation",
+    "--percentage_augmentation",
     type=float,
     default=0.5,
     help="The fraction of the dataset that will be augmented.",
+)
+
+parser.add_argument(
+    "--alpha",
+    type=float,
+    default=0.5,
+    help="Aplha value in Forte",
 )
 
 args = parser.parse_args()
@@ -55,13 +62,13 @@ print("The Experiment is curently using: {}".format(device))
 
 
 def initialize_model():
-    if args.model-type == "BERT":
+    if args.model_type == "BERT":
         print("**** Initializing the BERT model ****")
         BERT_Model = classification.BERTClassifier.BERTClassifier()
         return BERT_Model
 
 def initialize_dataset():
-    if args.dataset-type == "IMDB":
+    if args.dataset_type == "IMDB":
         dataset = Dataset(type = "IMDB")
         return dataset
 

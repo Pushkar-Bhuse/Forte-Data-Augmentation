@@ -10,7 +10,7 @@ import pandas as pd
 
 class BaseDataAugmenter(ABC):
 
-    def __init__(self, dataset = "", data_column = "", label_column = "", augment_frac = 0) -> None:
+    def __init__(self, dataset, data_column, label_column, augment_frac) -> None:
         self.dataset = dataset
         self.data_column = data_column
         self.label_column = label_column
@@ -25,8 +25,8 @@ class BaseDataAugmenter(ABC):
         return nlp
 
     
-    def _augment_data(self):
-        augment_processor, augment_configs = self._create_processor()
+    def augment_data(self):
+        augment_processor, augment_configs = self.create_processor()
         pipeline = self._initialize_pipeline()
         pipeline.add(component=augment_processor, config=augment_configs)
         pipeline.initialize()
