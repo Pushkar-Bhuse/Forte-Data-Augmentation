@@ -46,7 +46,6 @@ def get_augmentation_processors(ignore_list = ['__init__.py'],
                     # Perform Task
     return final_list
 
-def train_augmented_data(train_data, data_column, label_column, method):
-    classifier = BERTClassifier()
-    history = classifier.train_model(train_data, 0.2, data_column, label_column)
+def train_augmented_data(model, train_data, data_column, label_column, method):
+    history = model.train_model(train_data, 0.2, data_column, label_column)
     return {method: history}

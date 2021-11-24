@@ -28,7 +28,6 @@ parser.add_argument(
     "--augmentation-method",
     type=str,
     default="all",
-    choices=["ALL", "EDA-Insertion", "EDA-Deleteion", "EDA-Swapping", "BackTranslation"],
     help="The type of Data Augmentation Method to test.",
 )
 
@@ -67,18 +66,17 @@ def initialize_dataset():
         return dataset
 
 def get_augmentation_processors(dataset):
-    if args.augmentation-method == "ALL":
-        augmentation_methods = utils.get_augmentation_processors()
-        augmentation_processors = []
-        for method in augmentation_methods:
-            if method["name"] == "BackTranslator":
-                augmentation_processors.append(
-                    method['augmentation_class']()
-                )
-
+    augmentation_methods = utils.get_augmentation_processors()
+    augmentation_processors = []
+    for method in augmentation_methods:
+        if method["name"] == "BackTranslator":
             augmentation_processors.append(
-                method
+                method['augmentation_class']()
             )
+
+        augmentation_processors.append(
+            method
+        )
 
 
 
