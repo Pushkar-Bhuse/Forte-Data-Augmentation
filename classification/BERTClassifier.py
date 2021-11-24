@@ -88,10 +88,10 @@ class BERTClassifier():
 
         train_InputExamples, validation_InputExamples = self._convert_data_to_examples(train, validation, data_column, label_column)
 
-        train_data = self._convert_examples_to_tf_dataset(list(train_InputExamples), self.tokenizer, train_max_len)
+        train_data = self._convert_examples_to_tf_dataset(list(train_InputExamples), self.tokenizer)
         train_data = train_data.shuffle(100).batch(batch_size).repeat(epochs)
 
-        validation_data = self.convert_examples_to_tf_dataset(list(validation_InputExamples), self.tokenizer, validation_max_len)
+        validation_data = self._convert_examples_to_tf_dataset(list(validation_InputExamples), self.tokenizer)
         validation_data = validation_data.batch(batch_size)
 
         self.model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=3e-6, epsilon=1e-08, clipnorm=1.0), 
@@ -102,5 +102,4 @@ class BERTClassifier():
                                     patience=5, min_lr=0.001)
         self.history = self.model.fit(train_data, epochs=2, verbose=1, validation_data=validation_data, callbacks=[reduce_lr])
         return self.history
-    # def evaluate_test(self, log_destination):
 

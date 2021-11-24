@@ -6,6 +6,7 @@ import torch
 import classification
 import utils
 from dataset import Dataset
+import tensorflow as tf
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -43,7 +44,7 @@ parser.add_argument(
 parser.add_argument(
     "--percentage_augmentation",
     type=float,
-    default=0.5,
+    default=0.2,
     help="The fraction of the dataset that will be augmented.",
 )
 
@@ -54,7 +55,21 @@ parser.add_argument(
     help="Aplha value in Forte",
 )
 
+parser.add_argument(
+    "--train_validation_split",
+    type=float,
+    default=0.2,
+    help="Aplha value in Forte",
+)
+
+
+
 args = parser.parse_args()
+
+physical_devices = tf.config.list_physical_devices('GPU') 
+machine = "cuda" if physical_devices else "cpu"
+for device in physical_devices:
+    tf.config.experimental.set_memory_growth(device, True)
 
 # Checking for the existence of a GPU.
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -62,20 +77,23 @@ logging.root.setLevel(logging.INFO)
 print("The Experiment is curently using: {}".format(device))
 
 
+#Initializing model to train on classification task
 def initialize_model():
     if args.model_type == "BERT":
         print("**** Initializing the BERT model ****")
         BERT_Model = classification.BERTClassifier.BERTClassifier()
         return BERT_Model
 
+# Dataset to augment
 def initialize_dataset():
     if args.dataset_type == "IMDB":
         dataset = Dataset(type = "IMDB")
         return dataset
 
-def get_augmentation_processors(dataset):
+# Fetching all Forte Processors for data augmentation 
+def generate_augmentation_processors(dataset):
     if args.augmentation_method == "ALL":
-        augmentation_methods = utils.get_augmentation_processors()
+        augmentation_methods = utils.fetch_augmentation_processors()
         augmentation_processors = []
         train_data, test_data = dataset.get_dataset()
         data_col, label_col = dataset.get_column_names()
@@ -87,7 +105,7 @@ def get_augmentation_processors(dataset):
                         data_column = data_col,
                         label_column = label_col,
                         augment_frac = args.percentage_augmentation,
-                        device = device.type
+                        device = machine
                     ),
                     "name": method['name']
                 })
@@ -108,18 +126,19 @@ def get_augmentation_processors(dataset):
 def main():
     dataset = initialize_dataset()
     model = initialize_model()
-    augmentation_processors = get_augmentation_processors(dataset)
+    augmentation_processors = generate_augmentation_processors(dataset)
     for processor in augmentation_processors:
         augmented_data = processor['processor'].augment_data()
-        train_results = utils.train_augmented_data(
-                            model, 
-                            augmented_data,
-                            dataset.get_column_names()[0],
-                            dataset.get_column_names()[1],
-                            processor['name']
-                        )
-        utils.append_to_csv(train_results)
+        training_results = model.train_model(
+            augmented_data, 
+            args.train_validation_split, 
+            dataset.get_column_names()[0],
+            dataset.get_column_names()[1],
+        )
+        utils.append_to_csv({
+            "augmentation_method": processor['name'],
+            "results": training_results
+        })
 
 if __name__ == "__main__":
     main()
-
