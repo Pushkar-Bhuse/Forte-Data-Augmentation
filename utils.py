@@ -7,7 +7,8 @@ from importlib import import_module
 from augmentation.BaseDataAugmentation import BaseDataAugmenter
 from classification.BERTClassifier import BERTClassifier
 
-def append_to_csv(history):
+def append_to_csv(results_dict):
+    history = {results_dict["augmentation_method"]: results_dict["results"]}
     df = pd.DataFrame.from_dict(history, orient="index")
     if exists("aug_output.csv"):
         df.to_csv("aug_output.csv", mode="a", index=True, header=False)

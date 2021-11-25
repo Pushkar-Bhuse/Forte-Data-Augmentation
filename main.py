@@ -62,6 +62,12 @@ parser.add_argument(
     help="Aplha value in Forte",
 )
 
+parser.add_argument(
+    "--max_len",
+    type=int,
+    default=128,
+    help="Max length of sentence",
+)
 
 args = parser.parse_args()
 
@@ -135,16 +141,20 @@ def main():
             training_data = dataset.get_dataset()[0]
         else:
             training_data = processor['processor'].augment_data()
-
-        training_results = model.train_model(
-            training_data, 
-            args.train_test_split, 
+ 
+        training_results, test_results = model.train_test_model(
+            training_data,
+            dataset.get_dataset()[1], 
+            args.train_validation_split, 
             dataset.get_column_names()[0],
             dataset.get_column_names()[1],
         )
+        history = training_results
+        history["test_loss"] = test_results[0]
+        history["test_accuracy"] = test_results[1]
         utils.append_to_csv({
             "augmentation_method": processor['name'],
-            "results": training_results
+            "results": history
         })
 
 if __name__ == "__main__":
