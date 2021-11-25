@@ -137,6 +137,7 @@ def main():
     model = initialize_model()
     augmentation_processors = generate_augmentation_processors(dataset)
     for processor in augmentation_processors:
+        print("Testing for: {}".format(processor['name']))
         if processor['name'] == "No Augmentation":
             training_data = dataset.get_dataset()[0]
         else:

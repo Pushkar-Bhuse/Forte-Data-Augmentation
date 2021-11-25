@@ -37,8 +37,8 @@ class BERTClassifier():
 
             input_dict = self.tokenizer.encode_plus(
                 e.text_a,
-                add_special_tokens=True,
-                max_length=None, # truncates if len(s) > max_length
+                add_special_tokens=max_length,
+                max_length=max_length, # truncates if len(s) > max_length
                 return_token_type_ids=True,
                 return_attention_mask=True,
                 padding="max_length", # pads to the right by default # CHECK THIS for pad_to_max_length
@@ -111,7 +111,9 @@ class BERTClassifier():
 
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.01,
                                     patience=5, min_lr=0.001)
+        print("Training Model")
         self.history = self.model.fit(train_data, epochs=2, verbose=1, validation_data=validation_data, callbacks=[reduce_lr])
+        print("Testing Model")
         test_results = self.model.evaluate(test_data)
         return self.history.history, test_results
 

@@ -7,8 +7,11 @@ from forte.processors.misc import WhiteSpaceTokenizer
 
 from forte.pipeline import Pipeline
 import pandas as pd
+import nltk
+nltk.download('punkt')
 from nltk.tokenize import word_tokenize
 from nltk.tokenize.treebank import TreebankWordDetokenizer
+
 
 class BaseDataAugmenter(ABC):
 
@@ -28,6 +31,8 @@ class BaseDataAugmenter(ABC):
 
     def limit_max_length(self, text, max_length):
         words = word_tokenize(text)
+        if len(words) < 128:
+            return text
         words = words[:max_length]
         return TreebankWordDetokenizer().detokenize(words)
     
@@ -40,7 +45,7 @@ class BaseDataAugmenter(ABC):
         try:
             augmented_data = []
             for idx, m_pack in enumerate(pipeline.process_dataset(self.dataset[self.data_column].sample(frac = self.augment_frac))):
-                print("Currently on Index: {}".format(idx))
+                print("Currently on Index: {}".format(idx), end="\t")
                 augmented_data.append({
                     self.data_column: m_pack.get_pack("augmented_input_src").text,
                     self.label_column: self.dataset[self.label_column][idx]
