@@ -28,7 +28,7 @@ python3 main.py
 The results of the operations will be stored in `aug_output.csv`.
 
 ### Adding an augmentation method
-Fork the repository and create new file `my_new_augmenter.py` inside the augmentation folder. Next, create a class and make it extend `BaseDataAugmenter.py` using `from augmentation.BaseDataAugmentation import BaseDataAugmenter`.
-Put all processor configs in the `create_processor` method and define the processor in it. This method must return `processor, processor_config`.
-The `__init__` method requires arguments: dataset,  data_column, label_column, augment_frac. Take any additional arguments using kwargs.
+Fork the repository and create new file `my_new_augmenter.py` inside the augmentation folder. Next, create a class and make it extend `BaseDataAugmenter.py` using `from augmentation.BaseDataAugmentation import BaseDataAugmenter`.__
+Put all processor configs in the `create_processor` method and define the processor in it. This method must return `processor, processor_config`.__
+The `__init__` method requires arguments: dataset,  data_column, label_column, augment_frac. Take any additional arguments using kwargs.__
 Check out <a href="https://github.com/Pushkar-Bhuse/Forte-Data-Augmentation/blob/main/augmentation/backtranslation.py" target="_blank">Backtranslation</a> for an example.
