@@ -83,7 +83,8 @@ class BERTClassifier():
                     test_set, 
                     validation_split, 
                     data_column, 
-                    label_column, 
+                    label_column,
+                    max_length, 
                     batch_size = 32, 
                     epochs = 2) -> dict:
         train, validation = train_test_split(dataset, test_size=validation_split)
@@ -94,14 +95,14 @@ class BERTClassifier():
 
         train_InputExamples, validation_InputExamples, test_InputExamples = self._convert_data_to_examples(train, validation, test_set, data_column, label_column)
 
-        train_data = self._convert_examples_to_tf_dataset(list(train_InputExamples))
+        train_data = self._convert_examples_to_tf_dataset(list(train_InputExamples), max_length)
         train_data = train_data.shuffle(100).batch(batch_size).repeat(epochs)
 
-        validation_data = self._convert_examples_to_tf_dataset(list(validation_InputExamples))
+        validation_data = self._convert_examples_to_tf_dataset(list(validation_InputExamples), max_length)
         validation_data = validation_data.batch(batch_size)
 
-        test_data = self._convert_examples_to_tf_dataset(list(test_InputExamples), self.tokenizer)
-        test_data = test_data.shuffle(100).batch(batch_size).repeat(epochs)
+        test_data = self._convert_examples_to_tf_dataset(list(test_InputExamples), max_length)
+        test_data = test_data.shuffle(100).batch(batch_size)
 
 
         self.model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=3e-6, epsilon=1e-08, clipnorm=1.0), 

@@ -7,6 +7,8 @@ from forte.processors.misc import WhiteSpaceTokenizer
 
 from forte.pipeline import Pipeline
 import pandas as pd
+from nltk.tokenize import word_tokenize
+from nltk.tokenize.treebank import TreebankWordDetokenizer
 
 class BaseDataAugmenter(ABC):
 
@@ -24,13 +26,17 @@ class BaseDataAugmenter(ABC):
         nlp.add(component=WhiteSpaceTokenizer(), selector=AllPackSelector())
         return nlp
 
+    def limit_max_length(self, text, max_length):
+        words = word_tokenize(text)
+        words = words[:max_length]
+        return TreebankWordDetokenizer().detokenize(words)
     
-    def augment_data(self):
+    def augment_data(self, max_len):
         augment_processor, augment_configs = self.create_processor()
         pipeline = self._initialize_pipeline()
         pipeline.add(component=augment_processor, config=augment_configs)
         pipeline.initialize()
-
+        self.dataset[self.data_column] = self.dataset[self.data_column].apply(lambda x: self.limit_max_length(x, max_len))
         try:
             augmented_data = []
             for idx, m_pack in enumerate(pipeline.process_dataset(self.dataset[self.data_column].sample(frac = self.augment_frac))):

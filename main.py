@@ -56,10 +56,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--train_test_split",
+    "--train_validation_split",
     type=float,
     default=0.2,
-    help="Aplha value in Forte",
+    help="Train Validation Split %",
 )
 
 parser.add_argument(
@@ -140,14 +140,16 @@ def main():
         if processor['name'] == "No Augmentation":
             training_data = dataset.get_dataset()[0]
         else:
-            training_data = processor['processor'].augment_data()
- 
+            training_data = processor['processor'].augment_data(args.max_len)
+
+        testing_data = dataset.get_dataset()[1]
         training_results, test_results = model.train_test_model(
             training_data,
-            dataset.get_dataset()[1], 
+            testing_data, 
             args.train_validation_split, 
             dataset.get_column_names()[0],
             dataset.get_column_names()[1],
+            args.max_len
         )
         history = training_results
         history["test_loss"] = test_results[0]
