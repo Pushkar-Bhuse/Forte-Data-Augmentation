@@ -1,1 +1,6 @@
 data-aug-env/
+__pycache__/
+aclImdb/
+aclImdb_v1.tar.gz
+augmentation/__pycache__/
+classification/__pycache__/

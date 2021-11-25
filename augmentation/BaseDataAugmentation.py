@@ -31,13 +31,19 @@ class BaseDataAugmenter(ABC):
         pipeline.add(component=augment_processor, config=augment_configs)
         pipeline.initialize()
 
-        augmented_data = []
-        for idx, m_pack in enumerate(pipeline.process_dataset(self.dataset[self.data_column].sample(frac = self.augment_frac))):
-            print("Currently on Index: {}".format(idx))
-            augmented_data.append({
-                self.data_column: m_pack.get_pack("augmented_input_src").text,
-                self.label_column: self.dataset[self.label_column][idx]
-            })
+        try:
+            augmented_data = []
+            for idx, m_pack in enumerate(pipeline.process_dataset(self.dataset[self.data_column].sample(frac = self.augment_frac))):
+                print("Currently on Index: {}".format(idx))
+                augmented_data.append({
+                    self.data_column: m_pack.get_pack("augmented_input_src").text,
+                    self.label_column: self.dataset[self.label_column][idx]
+                })
+        except KeyError:
+            print("Something went wrong!")
+            pass
+        except:
+            pass
         augmented_data_df = pd.DataFrame(augmented_data)
         return pd.concat([self.dataset, augmented_data_df], axis=0)
 

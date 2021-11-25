@@ -26,17 +26,17 @@ class BERTClassifier():
         return train_InputExamples, validation_InputExamples
 
     def _convert_examples_to_tf_dataset(self, examples, max_length=128):
-        features = [] # -> will hold InputFeatures to be converted later
+        features = []
 
         for e in examples:
-            # Documentation is really strong for this method, so please take a look at it
+
             input_dict = self.tokenizer.encode_plus(
                 e.text_a,
                 add_special_tokens=True,
-                max_length=max_length, # truncates if len(s) > max_length
+                max_length=None, # truncates if len(s) > max_length
                 return_token_type_ids=True,
                 return_attention_mask=True,
-                pad_to_max_length=True, # pads to the right by default # CHECK THIS for pad_to_max_length
+                padding="max_length", # pads to the right by default # CHECK THIS for pad_to_max_length
                 truncation=True
             )
 
@@ -88,10 +88,10 @@ class BERTClassifier():
 
         train_InputExamples, validation_InputExamples = self._convert_data_to_examples(train, validation, data_column, label_column)
 
-        train_data = self._convert_examples_to_tf_dataset(list(train_InputExamples), self.tokenizer)
+        train_data = self._convert_examples_to_tf_dataset(list(train_InputExamples))
         train_data = train_data.shuffle(100).batch(batch_size).repeat(epochs)
 
-        validation_data = self._convert_examples_to_tf_dataset(list(validation_InputExamples), self.tokenizer)
+        validation_data = self._convert_examples_to_tf_dataset(list(validation_InputExamples))
         validation_data = validation_data.batch(batch_size)
 
         self.model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=3e-6, epsilon=1e-08, clipnorm=1.0), 

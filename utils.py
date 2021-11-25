@@ -14,14 +14,17 @@ def append_to_csv(history):
     else:
         df.to_csv("aug_output.csv")
 
-def get_augmentation_processors(ignore_list = ['__init__.py'], 
+def fetch_augmentation_processors(ignore_files = ['__init__.py'], 
+                                ignore_dirs = ['__pycache__'],
                                 base_directory = 'augmentation',
                                 specific_augemtation = []
                                 ):
     augmentation_list = []
     for root, dirs, files in os.walk(f"{base_directory}", topdown=False):    
+        if dirs in ignore_dirs:
+            continue
         for name in files:
-            if name not in ignore_list:
+            if name not in ignore_files:
                 augmentation_list.append(name.split(".")[0])
 
 
@@ -43,5 +46,4 @@ def get_augmentation_processors(ignore_list = ['__init__.py'],
                         "name": name,
                         "augmentation_class": obj
                     })
-                    # Perform Task
     return final_list

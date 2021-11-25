@@ -56,25 +56,21 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--train_validation_split",
+    "--train_test_split",
     type=float,
     default=0.2,
     help="Aplha value in Forte",
 )
 
 
-
 args = parser.parse_args()
 
+# Checking for the existence of a GPU and initialize it
 physical_devices = tf.config.list_physical_devices('GPU') 
 machine = "cuda" if physical_devices else "cpu"
 for device in physical_devices:
     tf.config.experimental.set_memory_growth(device, True)
-
-# Checking for the existence of a GPU.
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-logging.root.setLevel(logging.INFO)
-print("The Experiment is curently using: {}".format(device))
+print("The Experiment is curently using: {}".format(machine))
 
 
 #Initializing model to train on classification task
@@ -87,6 +83,7 @@ def initialize_model():
 # Dataset to augment
 def initialize_dataset():
     if args.dataset_type == "IMDB":
+        print("**** Fetching IMDB Dataset ****")
         dataset = Dataset(type = "IMDB")
         return dataset
 
@@ -97,6 +94,12 @@ def generate_augmentation_processors(dataset):
         augmentation_processors = []
         train_data, test_data = dataset.get_dataset()
         data_col, label_col = dataset.get_column_names()
+
+        # Adding Un-Augmented Dataset
+        augmentation_processors.append({
+            "processor": None,
+            "name": "No Augmentation"
+        })
         for method in augmentation_methods:
             if method["name"] == "BackTranslator":
                 augmentation_processors.append({
@@ -128,10 +131,14 @@ def main():
     model = initialize_model()
     augmentation_processors = generate_augmentation_processors(dataset)
     for processor in augmentation_processors:
-        augmented_data = processor['processor'].augment_data()
+        if processor['name'] == "No Augmentation":
+            training_data = dataset.get_dataset()[0]
+        else:
+            training_data = processor['processor'].augment_data()
+
         training_results = model.train_model(
-            augmented_data, 
-            args.train_validation_split, 
+            training_data, 
+            args.train_test_split, 
             dataset.get_column_names()[0],
             dataset.get_column_names()[1],
         )

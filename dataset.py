@@ -20,15 +20,16 @@ class Dataset():
                                     cache_dir='.',
                                     cache_subdir='')
 
-            # The shutil module offers a number of high-level 
-            # operations on files and collections of files.
+
             # Create main directory path ("/aclImdb")
             main_dir = os.path.join(os.path.dirname(dataset), 'aclImdb')
             # Create sub directory path ("/aclImdb/train")
             train_dir = os.path.join(main_dir, 'train')
-            # Remove unsup folder since this is a supervised learning task
+
+            # Removing Folder for Unsupervised Learning
             remove_dir = os.path.join(train_dir, 'unsup')
             shutil.rmtree(remove_dir)
+
             # View the final train folder
             print("The dataset is stored in {}".format(os.listdir(train_dir)))
 
@@ -52,10 +53,10 @@ class Dataset():
 
             self.test_data = pd.DataFrame([test_feat, test_lab]).T
             self.test_data.columns = [self.data_column, self.label_column]
-            self.test[self.data_column] = self.test[self.data_column].str.decode("utf-8")
+            self.test_data[self.data_column] = self.test_data[self.data_column].str.decode("utf-8")
         else:
             dataset = pd.read_csv(path, sep=sep)
-            self.train_data, self.test_data = train_test_split(dataset.sample(frac=0.1), test_size=self.train_test_split)
+            self.train_data, self.test_data = train_test_split(dataset, test_size=self.train_test_split)
             
     def get_dataset(self):
         return self.train_data, self.test_data
